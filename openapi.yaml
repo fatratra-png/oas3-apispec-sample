@@ -1,0 +1,272 @@
+openapi: 3.0.0
+info:
+  title: API {Nom}
+  version: 1.0.0
+  description: Description breve de l'API
+servers:
+  - url: 'https://api.example.com/v1'
+    description: Serveur de production
+tags:
+  - name : Ressource
+    description: Opérations liées à {Ressource}
+  - name : AutreRessource
+    description: Opérations liées à {AutreRessource}
+paths:
+  /ressource:
+    get:
+      tags: [Ressource]
+      summary: Lister des ressources
+      description: Récupère une liste de {Ressource}
+      parameters:
+        - in: query
+          name: page
+          schema: {type: integer,default: 1}
+          required: false
+        - in: query
+          name: limit
+          schema: {type: integer, default: 10}
+          required: false
+      responses:
+        '200':
+          description: Liste des ressources récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ressource'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Erreur'
+    post:
+      tags: [Ressource]
+      summary : Creer une ressource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RessourceSansId'
+      responses:
+        '201':
+          description: Ressource cree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource'
+        '422':
+          description: Donnee invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '409':
+          description: Conflit
+
+  /ressources/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer}
+    get:
+      tags: [Ressource]
+      summary: Lire une ressource
+      responses:
+        '200':
+          description: Ressource trouve
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+    put:
+      tags: [Ressource]
+      summary: Modifier une ressource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RessourceSansId'
+      responses:
+        '200':
+          description: Ressource modifie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource'
+        '422':
+          description: Donnee invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+    
+    patch:
+      tags: [Ressource]
+      summary: Modifer partiellement une ressource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: '#/components/schemas/RessourceSansId'
+      responses:
+        '200':
+          description: Ressource modifie partiellement
+          content:
+            application/json:
+              schema: '#/components/schemas/Ressource'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema: '#/components/schemas/Erreur'
+        '422':
+          description: Donnee invalide
+          content:
+            application/json:
+              schema: '#/components/schemas/Erreur'
+
+    delete:
+      tags: [Ressource]
+      summary: Supprimer une ressource
+      responses:
+        '204':
+          description: Ressource supprime
+        '404':
+          description: Ressource introuvable
+
+  /ressourceParent/{id}/ressourceEnfant:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer}
+    get:
+      summary: Lister les ressourcesEffant de ressourceParent
+      responses:
+        '200':
+          description: Lister des ressourcesEffant de ressourceParent
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/RessourceEnfant'
+        '404':
+          description: RessourceParent introuvable
+    
+    post:
+      summary: Creer une ressourceEnfant pour une ressourceParent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: /#/components/schemas/RessourceEnfantSansId
+      responses:
+        '201':
+          description: Ressource cree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RessourceEnfant'
+        '422':
+          description: Donnee invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  
+  /ressources/{id}/{action}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer}
+    put:
+      summary: Chnager le statut d'une ressource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [statut]
+              properties:
+                statut:
+                  type: string
+                  enum: [{VALEUR_AUTORISEES}]
+      responses:
+        '200':
+          description: Statut change avec succes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+
+components:
+  schemas:
+    RessourceSansId:
+      type: object
+      required: [ChampObligatoire1,ChampObligatoire2]
+      properties:
+        {ChampObligatoire1}:
+          type: string
+          example: HelloWorld
+    Ressource:
+      allOf:
+        - $ref: '#/components/schemas/RessourceSansId'
+      properties:
+        id:
+          type: integer
+    RessourceStatut:
+      type: string
+      enum: [A,B]
+    Erreur:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        title:
+          type: string
+          example: Ressource introuvable
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+
+  
