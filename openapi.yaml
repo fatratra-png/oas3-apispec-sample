@@ -126,23 +126,27 @@ paths:
         required: true
         content:
           application/json:
-            schema: '#/components/schemas/RessourceSansId'
+            schema:
+              $ref: '#/components/schemas/RessourceSansId'
       responses:
         '200':
           description: Ressource modifie partiellement
           content:
             application/json:
-              schema: '#/components/schemas/Ressource'
+              schema:
+                $ref: '#/components/schemas/Ressource'
         '404':
           description: Ressource introuvable
           content:
             application/json:
-              schema: '#/components/schemas/Erreur'
+              schema:
+                $ref: '#/components/schemas/Erreur'
         '422':
           description: Donnee invalide
           content:
             application/json:
-              schema: '#/components/schemas/Erreur'
+              schema:
+                $ref: '#/components/schemas/Erreur'
 
     delete:
       tags: [Ressource]
@@ -169,7 +173,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#components/schemas/RessourceEnfant'
+                  $ref: '#/components/schemas/RessourceEnfant'
         '404':
           description: RessourceParent introuvable
     
@@ -180,7 +184,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: /#/components/schemas/RessourceEnfantSansId
+              $ref: '#/components/schemas/RessourceEnfantSansId'
       responses:
         '201':
           description: Ressource cree
@@ -249,9 +253,24 @@ components:
       properties:
         id:
           type: integer
+      required: [id]
     RessourceStatut:
       type: string
       enum: [A,B]
+    RessourceEnfantSansId:
+      type: object
+      required: [ChampObligatoire1,ChampObligatoire2]
+      properties:
+        {ChampObligatoire1}:
+          type: string
+          example: HelloWorld
+    RessourceEnfant:
+      allOf:
+        - $ref: '#/components/schemas/RessourceEnfantSansId'
+      properties:
+        id:
+          type: integer
+      required: [id]
     Erreur:
       type: object
       properties:
