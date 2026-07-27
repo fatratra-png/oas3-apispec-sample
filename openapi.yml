@@ -1,0 +1,401 @@
+openapi: 3.0.3
+info:
+  title: API Ressource # FIXED: typo 'Ressourcre' -> 'Ressource'
+  version: 1.0.0
+  description: API de gestion de ressource
+servers:
+  - url: 'https://api.ressource.example'
+    description: Serveur de production
+paths:
+  /ressources:
+    get:
+      tags: [Ressource]
+      summary: Lister des ressources
+      parameters:
+        - in: query
+          name: page
+          schema: {type: integer,default: 1}
+          required: false
+        - in: query
+          name: limit
+          schema: {type: integer,default: 10} # FIXED: default was 1, changed to 10
+          required: false
+      responses:
+        '200':
+          description: Liste des ressources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ressource' # FIXED: was 'Ressources' (wrong schema name)
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur' # FIXED: was an array of Erreur, should be single object
+    post:
+      tags: [Ressource]
+      summary: Creer une ressource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RessourceSansId' # FIXED: was over-indented
+      responses:
+        '201':
+          description: Ressource cree
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource' # FIXED: was Erreur, should return created resource
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '422':
+          description: Donnee invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /ressources/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer}
+    get:
+      tags: [Ressource]
+      summary: Lire une ressource
+      responses:
+        '200':
+          description: Liste des ressources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource'
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+
+    put:
+      tags: [Ressource]
+      summary: Modifier une ressource
+      requestBody:
+        required: true
+        content:
+          application/json: # FIXED: was missing 'application/json' key
+            schema:
+              $ref: '#/components/schemas/RessourceSansId'
+      responses:
+        '200':
+          description: Ressource modifie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource'
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '422':
+          description: Donnee invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+    patch:
+      tags: [Ressource]
+      summary: Modifier partiellement une ressource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RessourceSansId' # FIXED: was '#components/...' (missing /)
+      responses:
+        '200':
+          description: Ressource modifie partiellement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource'
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '422':
+          description: Donnee invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+    delete:
+      tags: [Ressource] # FIXED: was [Ressources] (inconsistent tag name)
+      summary: Supprimer une ressource
+      responses:
+        '204':
+          description: Ressource supprimee avec succes
+          # FIXED: removed response body - 204 No Content has no body per HTTP spec
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur' # FIXED: was 'components/...' (missing #)
+
+  /ressourceParent/{id}/ressourceEnfant:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+    get:
+      summary: Lister les ressources enfant d'une ressource parent
+      responses:
+        '200':
+          description: Lister des ressourcesEffant de ressourceParent
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RessourceEnfant'
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: RessourceParent introuvable
+          content: # ADDED: missing content
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+
+    post:
+      summary: Creer une ressource enfant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RessourceEnfantSansId'
+      responses:
+        '201': # FIXED: was 200, should be 201 for resource creation
+          description: Ressource enfant creee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RessourceEnfant'
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '422':
+          description: Donne invalide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource introuvable
+          content: # ADDED: missing content
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+  /ressource/{id}/{action}:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+      - name: action # FIXED: was missing from path parameters
+        in: path
+        schema:
+          type: string
+        required: true
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [statut]
+              properties:
+                statut:
+                  $ref: '#/components/schemas/RessourceStatut' # FIXED: was enum: [{VALEURS}] (invalid)
+      responses:
+        '200':
+          description: Statut change avec succes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ressource'
+        '401':
+          description: Non authentifie
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '403':
+          description: Acces interdit
+          content: # ADDED: missing response implementation
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+        '404':
+          description: Ressource introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erreur'
+
+components:
+  schemas:
+    RessourceSansId:
+      type: object
+      required: [Champ1,Champ2]
+      properties:
+        Champ1:
+          type: string
+          example: HelloWorld
+        Champ2:
+          type: integer
+          example: 42
+    Ressource:
+      allOf:
+        - $ref: '#/components/schemas/RessourceSansId' # FIXED: was self-referencing 'Ressource' (circular)
+      properties:
+        id:
+          type: integer
+      required: [id]
+    RessourceStatut:
+      type: string
+      enum: [a,b]
+    RessourceEnfantSansId: # FIXED: was 'RessourcreEnfantSansId' (typo)
+      type: object
+      required: [Champ1,Champ2]
+      properties:
+        Champ1:
+          type: string
+          example: vody
+    RessourceEnfant:
+      allOf:
+        - $ref: '#/components/schemas/RessourceEnfantSansId' # FIXED: was '#components/schemas/RessourceEnfant' (missing / + wrong name)
+      properties:
+        id:
+          type: integer
+      required: [id]
+    Erreur:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 418
+        title:
+          type: string
+          example: Teapot
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

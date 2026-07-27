@@ -12,7 +12,7 @@ tags:
   - name : AutreRessource
     description: Opérations liées à {AutreRessource}
 paths:
-  /ressource:
+  /ressources:
     get:
       tags: [Ressource]
       summary: Lister des ressources
