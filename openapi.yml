@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API de gestion de ressource
 servers:
-  - url: 'https://api.ressource.example'
+  - url: 'https://api.example.com/v1'
     description: Serveur de production
 paths:
   /ressources:
